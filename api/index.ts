@@ -8,20 +8,15 @@ import {
 } from 'ask-sdk-core';
 import { Response } from 'ask-sdk-model';
 
-// URL Direct Stream REYFM #LOFI (320 kbps MP3)
 const STREAM_URL = 'https://listen.reyfm.de/lofi_320kbps.mp3';
 const STREAM_TOKEN = 'reyfm-lofi-stream';
 
-/**
- * 1. LaunchRequestHandler
- * Dipanggil saat user membuka skill: "Alexa, open <skill-name>"
- */
 const LaunchRequestHandler: RequestHandler = {
   canHandle(handlerInput) {
     return getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
   },
   handle(handlerInput): Response {
-    const speechText = 'Memutar REYFM Lofi Chill Beats untuk kamu.';
+    const speechText = 'Here Prof. Dhy! Enjoy your LoFi!';
     return handlerInput.responseBuilder
       .speak(speechText)
       .addAudioPlayerPlayDirective('REPLACE_ALL', STREAM_URL, STREAM_TOKEN, 0)
@@ -29,10 +24,6 @@ const LaunchRequestHandler: RequestHandler = {
   },
 };
 
-/**
- * 2. PlayIntentHandler
- * Menangani permintaan memutar musik atau resume: "Alexa, play / resume"
- */
 const PlayIntentHandler: RequestHandler = {
   canHandle(handlerInput) {
     return (
@@ -49,10 +40,6 @@ const PlayIntentHandler: RequestHandler = {
   },
 };
 
-/**
- * 3. Pause & Stop Intent Handler
- * Menangani saat user meminta berhenti: "Alexa, stop / pause / cancel"
- */
 const PauseAndStopIntentHandler: RequestHandler = {
   canHandle(handlerInput) {
     return (
@@ -69,10 +56,6 @@ const PauseAndStopIntentHandler: RequestHandler = {
   },
 };
 
-/**
- * 4. HelpIntentHandler
- * Menangani saat user meminta bantuan: "Alexa, help"
- */
 const HelpIntentHandler: RequestHandler = {
   canHandle(handlerInput) {
     return (
@@ -90,10 +73,6 @@ const HelpIntentHandler: RequestHandler = {
   },
 };
 
-/**
- * 5. AudioPlayer Event Handlers
- * Menangani lifecycle event dari AudioPlayer (Started, Finished, Stopped, Failed, dll.)
- */
 const AudioPlayerEventHandler: RequestHandler = {
   canHandle(handlerInput) {
     return getRequestType(handlerInput.requestEnvelope).startsWith('AudioPlayer.');
@@ -102,7 +81,6 @@ const AudioPlayerEventHandler: RequestHandler = {
     const requestType = getRequestType(handlerInput.requestEnvelope);
     console.log(`AudioPlayer event received: ${requestType}`);
 
-    // Jika terjadi error saat memutar stream di perangkat Alexa
     if (requestType === 'AudioPlayer.PlaybackFailed') {
       console.error(
         'Playback failed error:',
@@ -110,15 +88,10 @@ const AudioPlayerEventHandler: RequestHandler = {
       );
     }
 
-    // Alexa AudioPlayer event tidak boleh mengembalikan speech, cukup respon kosong
     return handlerInput.responseBuilder.getResponse();
   },
 };
 
-/**
- * 6. PlaybackController Handlers
- * Menangani tombol fisik atau tombol di layar Echo Show (Play / Pause button)
- */
 const PlaybackControllerHandler: RequestHandler = {
   canHandle(handlerInput) {
     return getRequestType(handlerInput.requestEnvelope).startsWith(
@@ -144,10 +117,6 @@ const PlaybackControllerHandler: RequestHandler = {
   },
 };
 
-/**
- * 7. SystemExceptionHandler
- * Menangani error dari perangkat (misal System.ExceptionEncountered)
- */
 const SystemExceptionHandler: RequestHandler = {
   canHandle(handlerInput) {
     return (
@@ -163,10 +132,7 @@ const SystemExceptionHandler: RequestHandler = {
   },
 };
 
-/**
- * 8. SessionEndedRequestHandler
- * Saat sesi suara ditutup
- */
+
 const SessionEndedRequestHandler: RequestHandler = {
   canHandle(handlerInput) {
     return getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
@@ -177,10 +143,6 @@ const SessionEndedRequestHandler: RequestHandler = {
   },
 };
 
-/**
- * 9. ErrorHandler
- * Menangkap error runtime yang tidak terduga
- */
 const CustomErrorHandler: ErrorHandler = {
   canHandle() {
     return true;
@@ -194,7 +156,7 @@ const CustomErrorHandler: ErrorHandler = {
   },
 };
 
-// Inisialisasi Alexa Skill instance sekali di memori (Serverless cold-start optimization)
+
 const skill = SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
@@ -209,11 +171,8 @@ const skill = SkillBuilders.custom()
   .addErrorHandlers(CustomErrorHandler)
   .create();
 
-/**
- * Vercel Serverless Function Handler
- */
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Health check endpoint jika dibuka di browser
   if (req.method === 'GET') {
     return res.status(200).send('Alexa REYFM Lo-Fi Skill Service is Running.');
   }
